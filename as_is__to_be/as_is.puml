@@ -1,6 +1,7 @@
 @startuml
+
 skinparam componentStyle uml2
-user  as Client
+"Client"
 
 package web-server #LightGreen{
     [NGINX] 
