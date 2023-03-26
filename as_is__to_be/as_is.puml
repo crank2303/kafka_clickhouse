@@ -1,0 +1,43 @@
+@startuml
+skinparam componentStyle uml2
+user  as Client
+
+package web-server #LightGreen{
+    [NGINX] 
+}
+package Auth_API #Grey {
+    [Flask_auth_api]
+    database Postgres_Auth 
+    database Redis_auth
+}
+package ETL #Pink{
+    [ETL_service] 
+}
+package Async_FastAPI #Aqua{
+    [Fast_API] 
+    database ElasticSearch 
+    database Redis_cache
+}
+package Django #Green{
+    [Movies_admin] 
+    database Postgres 
+}
+
+[Client] -> [NGINX]: 1. get film
+[NGINX] --> [Fast_API]: 2. get film
+[Fast_API] --> [Flask_auth_api]: 3. auth
+[Flask_auth_api] --> Postgres_Auth: 4. is_user?
+[Flask_auth_api] <-- Postgres_Auth: 5. user
+[Flask_auth_api] -> [Redis_auth]: 6. is_token?
+[Flask_auth_api] <- [Redis_auth]: 7. +
+[Fast_API] <-r- [Flask_auth_api]: 8. +
+[Fast_API] --> Redis_cache: 9. get film
+[Fast_API] <-- Redis_cache: 10. empty
+[Fast_API] -> ElasticSearch: 11. get film
+[Fast_API] <- ElasticSearch: 12. film
+[NGINX] <-- [Fast_API]: 13. film
+[Client] <-- [NGINX]: 14. film
+Postgres <-- [Movies_admin]
+[ETL_service] --> ElasticSearch
+[ETL_service] <- Postgres
+@enduml
