@@ -6,8 +6,6 @@ services:
     build: ./ugc_api
     env_file:
       - ugc_api/.env
-    volumes:
-      - ./ugc_api:/app
     depends_on:
       kafka:
         condition: service_healthy

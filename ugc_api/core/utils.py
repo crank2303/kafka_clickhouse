@@ -7,6 +7,7 @@ from threading import Thread
 
 import jwt
 import requests
+
 from models.models import FilmTimeStamp
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
