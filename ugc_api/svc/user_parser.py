@@ -3,6 +3,7 @@ import uuid
 from abc import ABC
 
 import jwt
+
 from core.config import settings
 
 
