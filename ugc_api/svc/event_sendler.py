@@ -17,7 +17,7 @@ class EventSendler(ABC):
         pass
 
     @abc.abstractmethod
-    def post_event(self, event_obj, topic):
+    def post_event(self, event_obj, topic) -> KafkaEventProducer:
         pass
 
 
@@ -25,10 +25,10 @@ class KafkaEventSendler(EventSendler):
     user_parser: JWTUserParser = JWTUserParser()
     event_producer: KafkaEventProducer
 
-    def __init__(self, event_producer):
+    def __init__(self, event_producer: KafkaEventProducer):
         self.event_producer = event_producer
 
-    def post_event(self, event_obj: FilmTimeStamp, topic: str):
+    def post_event(self, event_obj: FilmTimeStamp, topic: str) -> KafkaEventProducer:
         user_id = self.get_user(event_obj.jwt)
         return self.event_producer.send(
             topic=topic, value=KafkaFilmTimeStamp(user_id=user_id, **event_obj.dict()).json().encode()
