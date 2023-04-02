@@ -9,19 +9,17 @@ from kafka.admin import KafkaAdminClient, NewTopic
 
 
 class EventProducer(ABC):
-    def __init__(self, event_producer):
+    def __init__(self, event_producer: AIOKafkaProducer):
         self.event_producer = event_producer
 
     @abc.abstractmethod
-    def send(self, topic: str, value: str, *args, **kwargs):
+    def send(self, topic: str, value: str, *args, **kwargs) -> AIOKafkaProducer:
         pass
 
 
 class KafkaEventProducer(EventProducer):
-    event_producer: AIOKafkaProducer
-    admin_client: KafkaAdminClient
 
-    def __init__(self, event_producer, kafka_admin, topics: Set[str]):
+    def __init__(self, event_producer: AIOKafkaProducer, kafka_admin: KafkaAdminClient, topics: Set[str]):
         super().__init__(event_producer)
         self.admin_client = kafka_admin
         topics_list = []
@@ -33,7 +31,7 @@ class KafkaEventProducer(EventProducer):
         self.topics = existing_topics.union(topics)
 
     @backoff.on_exception(backoff.expo, requests.exceptions.Timeout)
-    def send(self, topic: str, value: bytes, *args, **kwargs):
+    def send(self, topic: str, value: bytes, *args, **kwargs) -> AIOKafkaProducer:
         return self.event_producer.send(topic=topic, value=value, *args, **kwargs)
 
 
